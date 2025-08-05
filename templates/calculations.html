@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>J.W. Foods Admin Dashboard</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        /* Import Google Font for Verdana derivative */
+        @import url('https://fonts.googleapis.com/css2?family=Verdana:wght@400;600;700&display=swap');
+        
+        /* Define CSS Variables for consistent colors */
+        :root {
+            --primary-green: #2d5016;
+            --accent-orange: #ff6b35;
+            --warm-cream: #fef7e6;
+            --deep-brown: #4a2c16;
+            --fresh-green: #7cb342;
+            --light-gray: #f8f9fa;
+        }
+        
+        /* Base Body Styles */
+        body {
+            font-family: 'Verdana', Arial, sans-serif;
+            background-color: var(--light-gray);
+            color: var(--deep-brown);
+            padding-top: 80px; /* Space for fixed navbar */
+        }
+        
+        /* Navbar Styles */
+        .navbar {
+            background: linear-gradient(135deg, var(--primary-green) 0%, var(--fresh-green) 100%);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+        
+        .navbar-brand {
+            color: white !important;
+            font-weight: 700;
+            font-size: 1.8rem;
+        }
+
+        .navbar-nav .nav-link {
+            color: white !important;
+            font-weight: 600;
+            margin: 0 10px;
+            font-size: 1.1rem;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+
+        .navbar-nav .nav-link:hover {
+            color: var(--warm-cream) !important;
+            transform: translateY(-2px);
+        }
+        
+        /* Main Container Padding */
+        .container-fluid {
+            padding: 20px;
+        }
+
+        /* Card Styles */
+        .card {
+            border-radius: 15px;
+            border: none;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.08);
+            margin-bottom: 25px;
+        }
+        
+        .card-header {
+            background-color: var(--primary-green);
+            color: white;
+            font-weight: 600;
+            border-top-left-radius: 15px;
+            border-top-right-radius: 15px;
+            padding: 1rem 1.5rem;
+            font-size: 1.25rem;
+        }
+
+        .card-body {
+            padding: 1.5rem;
+        }
+
+        /* Form Control and Button General Styles */
+        .form-control, .btn {
+            border-radius: 10px;
+        }
+
+        /* Primary Button Styles (for Update Coefficients) */
+        .btn-primary {
+            background-color: var(--accent-orange);
+            border-color: var(--accent-orange);
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary:hover {
+            background-color: #e55a2b;
+            border-color: #e55a2b;
+            transform: translateY(-2px);
+        }
+
+        /* Table Styles */
+        .table thead {
+            background-color: var(--fresh-green);
+            color: white;
+        }
+
+        .table tbody tr:hover {
+            background-color: var(--warm-cream);
+        }
+
+        /* Alert Messages Styles */
+        .alert {
+            border-radius: 10px;
+            margin-top: 20px;
+            font-weight: 600;
+        }
+
+        /* Footer Styles */
+        .footer {
+            background-color: var(--deep-brown);
+            color: white;
+            padding: 20px 0;
+            text-align: center;
+            margin-top: 40px;
+            border-top-left-radius: 15px;
+            border-top-right-radius: 15px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Fixed Navigation Bar -->
+    <nav class="navbar navbar-expand-lg navbar-dark fixed-top">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="/admin">
+                <i class="fas fa-cogs me-2"></i> J.W. Foods Admin
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#adminNavbar" aria-controls="adminNavbar" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="adminNavbar">
+                <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+                    <li class="nav-item">
+                        <a class="nav-link active" aria-current="page" href="/admin">Dashboard</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/admin/calculations">Calculations</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/admin/contacts">Contacts</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/">View Website</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container-fluid">
+        <h1 class="mb-4 text-center" style="color: var(--primary-green);">Admin Dashboard</h1>
+
+        <!-- Flash Messages Display -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <div class="row justify-content-center">
+                    <div class="col-lg-8">
+                        {% for category, message in messages %}
+                            <div class="alert alert-{{ 'success' if category == 'success' else 'danger' }} alert-dismissible fade show" role="alert">
+                                {{ message }}
+                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            {% endif %}
+        {% endwith %}
+
+        <div class="row">
+            <!-- Update Delivery Coefficients Card -->
+            <div class="col-lg-6">
+                <div class="card">
+                    <div class="card-header">
+                        <i class="fas fa-sliders-h me-2"></i> Update Delivery Coefficients
+                    </div>
+                    <div class="card-body">
+                        <form action="{{ url_for('update_coefficients') }}" method="POST">
+                            <div class="mb-3">
+                                <label for="distance_coefficient" class="form-label">Distance Coefficient</label>
+                                <input type="number" step="0.01" class="form-control" id="distance_coefficient" name="distance_coefficient" value="{{ coefficients.distance_coefficient if coefficients else 0.5 }}" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="weight_coefficient" class="form-label">Weight Coefficient</label>
+                                <input type="number" step="0.01" class="form-control" id="weight_coefficient" name="weight_coefficient" value="{{ coefficients.weight_coefficient if coefficients else 0.5 }}" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="base_cost" class="form-label">Base Cost</label>
+                                <input type="number" step="0.01" class="form-control" id="base_cost" name="base_cost" value="{{ coefficients.base_cost if coefficients else 5.0 }}" required>
+                            </div>
+                            <button type="submit" class="btn btn-primary w-100">
+                                <i class="fas fa-sync-alt me-2"></i> Update Coefficients
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            <!-- Recent Delivery Calculations Card -->
+            <div class="col-lg-6">
+                <div class="card">
+                    <div class="card-header">
+                        <i class="fas fa-calculator me-2"></i> Recent Delivery Calculations
+                    </div>
+                    <div class="card-body">
+                        {% if calculations %}
+                        <div class="table-responsive">
+                            <table class="table table-striped table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Distance (km)</th>
+                                        <th>Weight (kg)</th>
+                                        <th>Cost (CAD)</th>
+                                        <th>Time</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for calc in calculations %}
+                                    <tr>
+                                        <td>{{ calc.id }}</td>
+                                        <td>{{ calc.distance }}</td>
+                                        <td>{{ calc.weight }}</td>
+                                        <td>{{ "%.2f" | format(calc.calculated_cost) }}</td>
+                                        <td>{{ calc.calculated_at.strftime('%Y-%m-%d %H:%M') }}</td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="text-center mt-3">
+                            <a href="{{ url_for('admin_calculations') }}" class="btn btn-outline-secondary">View All Calculations <i class="fas fa-arrow-right ms-2"></i></a>
+                        </div>
+                        {% else %}
+                        <p class="text-center text-muted">No recent calculations to display.</p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <!-- Recent Contact Submissions Card -->
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header">
+                        <i class="fas fa-envelope me-2"></i> Recent Contact Submissions
+                    </div>
+                    <div class="card-body">
+                        {% if contacts %}
+                        <div class="table-responsive">
+                            <table class="table table-striped table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Name</th>
+                                        <th>Email</th>
+                                        <th>Phone</th>
+                                        <th>Message</th>
+                                        <th>Submitted At</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for contact in contacts %}
+                                    <tr>
+                                        <td>{{ contact.id }}</td>
+                                        <td>{{ contact.name }}</td>
+                                        <td>{{ contact.email }}</td>
+                                        <td>{{ contact.phone if contact.phone else 'N/A' }}</td>
+                                        <td>{{ contact.message[:50] }}{% if contact.message|length > 50 %}...{% endif %}</td>
+                                        <td>{{ contact.submitted_at.strftime('%Y-%m-%d %H:%M') }}</td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="text-center mt-3">
+                            <a href="{{ url_for('admin_contacts') }}" class="btn btn-outline-secondary">View All Contacts <i class="fas fa-arrow-right ms-2"></i></a>
+                        </div>
+                        {% else %}
+                        <p class="text-center text-muted">No recent contact submissions to display.</p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <p>&copy; 2025 J.W. Foods Admin. All rights reserved.</p>
+    </footer>
+
+    <!-- Bootstrap Bundle with Popper -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
+
